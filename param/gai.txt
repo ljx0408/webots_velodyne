@@ -1,0 +1,56 @@
+改costmap_common_params.yaml：
+	为camera
+	# 配置代价地图的传感器
+	observation_sources: camera
+	camera: 
+	  sensor_frame: camera_link
+	  data_type: Camera
+	  topic: /camera/image_raw
+	  marking: true
+	  clearing: true
+
+	# 机器人轮廓
+	footprint: [[-0.105, -0.105], [-0.105, 0.105], [0.041, 0.105], [0.041, -0.105]]
+
+	# 代价地图参数
+	obstacle_range: 3.0
+	raytrace_range: 3.5
+	inflation_radius: 1.0
+	cost_scaling_factor: 3.0
+
+改dwa_local_planner_params.yaml：
+	global_costmap:
+	  global_frame: map
+	  robot_base_frame: base_link
+
+	  update_frequency: 10.0        # 根据视觉SLAM系统更新频率调整
+	  publish_frequency: 10.0       # 同上
+	  transform_tolerance: 1.0      # 适当增加容忍度，处理视觉SLAM的延迟
+
+	  static_map: false             # 使用动态更新的视觉SLAM地图
+	  
+改local_costmap_params.yaml：
+	local_costmap:
+	  global_frame: map
+	  robot_base_frame: base_link
+
+	  update_frequency: 5.0        # 根据视觉SLAM的更新频率调整
+	  publish_frequency: 5.0       # 同上
+	  transform_tolerance: 0.5     # 可根据视觉SLAM的延迟调整
+
+	  static_map: false            # 使用动态地图，视觉SLAM实时更新地图
+	  rolling_window: true         # 启用滚动窗口以实时更新周围环境
+	  width: 3                     # 可根据需要调整地图范围
+	  height: 3                    # 可根据需要调整地图范围
+	  resolution: 0.05             # 根据传感器的精度调整分辨率
+
+改move_base_params.yaml：
+	shutdown_costmaps: false
+	controller_frequency: 8.0         # 适当减少控制器频率以适应视觉SLAM计算负担
+	planner_patience: 10.0           # 增加路径规划耐心，以应对视觉SLAM中的路径计算延迟
+	controller_patience: 20.0        # 增加控制器耐心，以应对可能的定位不稳定
+	conservative_reset_dist: 4.0     # 增大重置距离，避免过频繁的重定位操作
+	planner_frequency: 5.0           # 根据需求调整路径规划频率
+	oscillation_timeout: 15.0        # 增加震荡超时时间，给系统更多时间纠正震荡
+	oscillation_distance: 0.5       # 适当增加震荡距离，以适应视觉SLAM的定位精度
+
